@@ -1,0 +1,34 @@
+name: Unzip CASSPI-RL File
+
+on:
+  workflow_dispatch: # Allow manual triggering from the Actions page
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Grant write permission to push extracted files back to the repository
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract ZIP file
+        run: |
+          # Use the unzip command to extract the ZIP file in the root directory to the current directory
+          unzip -o CASSPI-RL.zip
+          # Delete the original ZIP file (optional, uncomment the next line if you want to keep it)
+          # rm CASSPI-RL.zip
+
+      - name: Commit and push extracted files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          # Check if there are file changes to avoid errors when there are no changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-unzip CASSPI-RL.zip"
+            git push
+          fi
